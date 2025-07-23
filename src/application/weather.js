@@ -1,9 +1,12 @@
 import axios from "axios";
 import { districts } from '../application/dto/weather.js';
+import { ApiError } from "../domain/errors/ApiError.js";
 
 export const getWeatherStats = async (district) => {
   const location = districts[district];
-  if (!location) throw new Error("Invalid district");
+ if (!districts[district]) {
+  throw new ApiError(400, "Invalid district");
+}
 
   const { lat, lon } = location;
 
