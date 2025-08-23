@@ -2,8 +2,7 @@
 import { ApiError } from "../domain/errors/ApiError.js";
 import Crop from "../infrastructure/schemas/cropSchema.js";
 import { cropSchema } from "./dto/crop.js";
-;
-
+import OpenAI from "openai";
 
 export const createCrop = async (req, res, next) => {
   try {
@@ -18,5 +17,32 @@ export const createCrop = async (req, res, next) => {
     next(err);
   }
 };
+
+
+
+export const generateResponse = async (req, res, next) =>{
+  const {prompt} = req.body;
+  const openai = new OpenAI({
+    apiKey:process.env.OPENAI_API_KEY,
+  });
+
+  const completion = await openai.chat.completions.create({
+    model: "gpt-4o",
+    messages: [
+        {
+            role: "user",
+            content: prompt
+                
+        },
+    ],
+    store:true,
+});
+
+console.log(completion.choices[0].message);
+
+res.status(200).json({message:completion.choices[0].message.content})
+}
+
+
 
 
